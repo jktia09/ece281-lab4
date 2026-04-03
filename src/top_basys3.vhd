@@ -46,7 +46,7 @@ architecture top_basys3_arch of top_basys3 is
 	end component elevator_controller_fsm;
 	
 	component TDM4 is
-		generic map ( constant k_WIDTH : natural  := 4); -- bits in input and output
+		generic ( constant k_WIDTH : natural  := 4); -- bits in input and output
         port ( i_clk		: in  STD_LOGIC;
            i_reset		: in  STD_LOGIC; -- asynchronous
            i_D3 		: in  STD_LOGIC_VECTOR (k_WIDTH - 1 downto 0);
@@ -59,7 +59,7 @@ architecture top_basys3_arch of top_basys3 is
     end component TDM4;
      
 	component clock_divider is
-        generic map ( constant k_DIV : natural := 2	); -- How many clk cycles until slow clock toggles
+        generic ( constant k_DIV : natural := 2	); -- How many clk cycles until slow clock toggles
                                                    -- Effectively, you divide the clk double this 
                                                    -- number (e.g., k_DIV := 2 --> clock divider of 4)
         port ( 	i_clk    : in std_logic;
@@ -104,7 +104,7 @@ begin
         );
         
     TDM4_inst : TDM4
-        generic map ( constant k_WIDTH : natural   := 4);
+        generic ( constant k_WIDTH : natural   := 4);
         port map ( 
             i_clk   => w_clk,
             i_reset => '0',
