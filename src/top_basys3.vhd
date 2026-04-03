@@ -104,7 +104,7 @@ begin
         );
         
     TDM4_inst : TDM4
-        generic map ( constant k_WIDTH : natural   := 4);
+        generic map ( k_WIDTH : natural   := 4);
         port map ( 
             i_clk   => w_clk,
             i_reset => '0',
