@@ -31,8 +31,8 @@ architecture top_basys3_arch of top_basys3 is
     signal w_seg : STD_LOGIC_VECTOR (3 downto 0);
     signal w_seg_2 : STD_LOGIC_VECTOR (3 downto 0);
     signal w_seg_0 : STD_LOGIC_VECTOR (3 downto 0);
-    signal w_clk_reset : STD_LOGIC_VECTOR (3 downto 0);
-    signal w_elev_reset : STD_LOGIC_VECTOR (3 downto 0);
+    signal w_clk_reset : std_logic;
+    signal w_elev_reset : std_logic;
   
 	-- component declarations
     component sevenseg_decoder is
