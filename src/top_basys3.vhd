@@ -70,14 +70,77 @@ architecture top_basys3_arch of top_basys3 is
 	
 begin
 	-- PORT MAPS ----------------------------------------
-    	
+
+--2elevators
+    elevator_inst1 : elevator_controller_fsm 
+        port map (
+	       i_clk   => w_clk,
+	       i_reset => btnR,
+	       is_stopped  => sw(0),
+	       go_up_down => sw(1),
+	       o_floor  => w_floor
+	   );
+	   
+    elevator_inst2 : elevator_controller_fsm 
+        port map (
+	       i_clk   => w_clk,
+	       i_reset => btnR,
+	       is_stopped  => sw(14),
+	       go_up_down => sw(15),
+	       o_floor  => w_floor
+	   );   
+	   
+--2sevensegs	
+	sevenseg_inst1 : sevenseg_decoder
+	    port map (
+            i_Hex   => sw,
+            o_seg_n => seg
+        );
 	
+	sevenseg_inst2 : sevenseg_decoder
+	    port map (
+            i_Hex   => sw,
+            o_seg_n => seg
+        );
+        
+    TDM4_inst : TDM4
+        generic ( constant k_WIDTH : natural   := 7);
+        port map ( 
+            i_clk   => w_clk,
+            i_reset => '0',
+            i_D3    => 0001110,
+            i_D2    => w_seg_2,
+            i_D1    => 0001110,
+            i_D0    => w_seg_0,
+            o_data  => seg,
+            o_sel   => an
+        );
+		
 	-- CONCURRENT STATEMENTS ----------------------------
-	
+	clkdiv_inst1 : clock_divider 		--instantiation of clock_divider to take 
+        generic map ( k_DIV => 25000000 ) -- 1 Hz clock from 100 MHz
+        port map (						  
+            i_clk   => w_clk,
+            i_reset => btnL,
+            o_clk   => w_clk
+        );    
+        
+	clkdiv_inst2 : clock_divider 		--instantiation of clock_divider to take 
+        generic map ( k_DIV => 12500 ) -- _ Hz clock from ___ MHz
+        port map (						  
+            i_clk   => w_clk,
+            i_reset => btnL,
+            o_clk   => w_clk
+        );    
+        
+        
 	-- LED 15 gets the FSM slow clock signal. The rest are grounded.
-	
+	led(14 downto 0) <= (others => '0');
+	led(15) <= w_clk;
 	-- leave unused switches UNCONNECTED. Ignore any warnings this causes.
 	
 	-- reset signals
+	w_clk_reset <= btnU OR btnL;
+	w_elev_reset <= btnU or btnR;
 	
 end top_basys3_arch;
