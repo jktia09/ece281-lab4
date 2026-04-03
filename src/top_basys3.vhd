@@ -26,10 +26,13 @@ architecture top_basys3_arch of top_basys3 is
 
     -- signal declarations
     signal w_clk : std_logic;
-    signal w_floor : STD_LOGIC_VECTOR (3 downto 0);
+    signal w_floor1 : STD_LOGIC_VECTOR (3 downto 0);
+    signal w_floor2 : STD_LOGIC_VECTOR (3 downto 0);
     signal w_seg : STD_LOGIC_VECTOR (3 downto 0);
     signal w_seg_2 : STD_LOGIC_VECTOR (3 downto 0);
     signal w_seg_0 : STD_LOGIC_VECTOR (3 downto 0);
+    signal w_clk_reset : STD_LOGIC_VECTOR (3 downto 0);
+    signal w_elev_reset : STD_LOGIC_VECTOR (3 downto 0);
   
 	-- component declarations
     component sevenseg_decoder is
@@ -82,7 +85,7 @@ begin
 	       i_reset => btnR,
 	       is_stopped  => sw(0),
 	       go_up_down => sw(1),
-	       o_floor  => w_floor
+	       o_floor  => w_floor1
 	   );
 	   
     elevator_inst2 : elevator_controller_fsm 
@@ -91,19 +94,19 @@ begin
 	       i_reset => btnR,
 	       is_stopped  => sw(14),
 	       go_up_down => sw(15),
-	       o_floor  => w_floor
+	       o_floor  => w_floor2
 	   );   
 	   
 --2sevensegs	
 	sevenseg_inst1 : sevenseg_decoder
 	    port map (
-            i_Hex   => sw,
+            i_Hex   => w_floor1,
             o_seg_n => seg
         );
 	
 	sevenseg_inst2 : sevenseg_decoder
 	    port map (
-            i_Hex   => sw,
+            i_Hex   => w_floor2,
             o_seg_n => seg
         );
         
