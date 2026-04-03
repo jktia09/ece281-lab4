@@ -25,7 +25,11 @@ end top_basys3;
 architecture top_basys3_arch of top_basys3 is
 
     -- signal declarations
-    
+    signal w_clk : std_logic;
+    signal w_floor : std_logic;
+    signal w_seg : std_logic;
+    signal w_seg_2 : std_logic;
+    signal w_seg_0 : std_logic;
   
 	-- component declarations
     component sevenseg_decoder is
