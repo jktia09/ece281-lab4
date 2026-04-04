@@ -26,9 +26,12 @@ architecture top_basys3_arch of top_basys3 is
 
     -- signal declarations
     signal w_clk : std_logic;
+    signal w_clk1 : std_logic;
+    signal w_clk2 : std_logic;    
     signal w_floor1 : STD_LOGIC_VECTOR (3 downto 0);
     signal w_floor2 : STD_LOGIC_VECTOR (3 downto 0);
-    signal w_seg : STD_LOGIC_VECTOR (3 downto 0);
+    signal w_seg1 : STD_LOGIC_VECTOR (6 downto 0);
+    signal w_seg2 : STD_LOGIC_VECTOR (6 downto 0);
     signal w_seg_2 : STD_LOGIC_VECTOR (3 downto 0);
     signal w_seg_0 : STD_LOGIC_VECTOR (3 downto 0);
     signal w_clk_reset : std_logic;
@@ -81,8 +84,8 @@ begin
 --2elevators
     elevator_inst1 : elevator_controller_fsm 
         port map (
-	       i_clk   => w_clk,
-	       i_reset => btnR,
+	       i_clk   => w_clk1,
+	       i_reset => w_elev_reset, --btnR
 	       is_stopped  => sw(0),
 	       go_up_down => sw(1),
 	       o_floor  => w_floor1
@@ -90,8 +93,8 @@ begin
 	   
     elevator_inst2 : elevator_controller_fsm 
         port map (
-	       i_clk   => w_clk,
-	       i_reset => btnR,
+	       i_clk   => w_clk1,
+	       i_reset => w_elev_reset,
 	       is_stopped  => sw(14),
 	       go_up_down => sw(15),
 	       o_floor  => w_floor2
@@ -101,27 +104,27 @@ begin
 	sevenseg_inst1 : sevenseg_decoder
 	    port map (
             i_Hex   => w_floor1,
-            o_seg_n => seg
+            o_seg_n => w_seg1
         );
 	
 	sevenseg_inst2 : sevenseg_decoder
 	    port map (
             i_Hex   => w_floor2,
-            o_seg_n => seg
+            o_seg_n => w_seg2
         );
         
     TDM4_inst : TDM4
         generic map (
-        k_WIDTH => 4
+        k_WIDTH => 7
         )
         port map ( 
-            i_clk   => w_clk,
+            i_clk   => w_clk2,
             i_reset => '0',
-            i_D3    => "1111",
-            i_D2    => w_seg_2,
-            i_D1    => "1111",
-            i_D0    => w_seg_0,
-            o_data  => w_seg,
+            i_D0    => w_seg1,
+            i_D1    => "0001110", --"1111"
+            i_D2    => w_seg2,
+            i_D3    => "0001110", -- come up with F in binary.
+            o_data  => seg,
             o_sel   => an
         );
 		
@@ -129,23 +132,23 @@ begin
 	clkdiv_inst1 : clock_divider 		--instantiation of clock_divider to take 
         generic map ( k_DIV => 25000000 ) -- 1 Hz clock from 100 MHz
         port map (						  
-            i_clk   => w_clk,
-            i_reset => btnL,
-            o_clk   => w_clk
+            i_clk   => clk,
+            i_reset => w_clk_reset,
+            o_clk   => w_clk1
         );    
         
 	clkdiv_inst2 : clock_divider 		--instantiation of clock_divider to take 
         generic map ( k_DIV => 12500 ) -- _ Hz clock from ___ MHz
         port map (						  
-            i_clk   => w_clk,
+            i_clk   => clk,
             i_reset => btnL,
-            o_clk   => w_clk
+            o_clk   => w_clk2
         );    
         
         
 	-- LED 15 gets the FSM slow clock signal. The rest are grounded.
 	led(14 downto 0) <= (others => '0');
-	led(15) <= w_clk;
+	led(15) <= w_clk1;
 	-- leave unused switches UNCONNECTED. Ignore any warnings this causes.
 	
 	-- reset signals
